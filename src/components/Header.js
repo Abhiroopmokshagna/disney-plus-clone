@@ -30,6 +30,7 @@ function Header() {
           <span>Series</span>
         </a>
       </NavMenu>
+      <UsrImg src="https://media-exp1.licdn.com/dms/image/C5103AQEJuECoPrNUZg/profile-displayphoto-shrink_200_200/0/1574132865037?e=1651104000&v=beta&t=ekdfzTIvJQ79YqNPSmhuV34WNiYokmeN43oc7FWQNbQ" />
     </Nav>
   );
 }
@@ -50,9 +51,13 @@ const Logo = styled.img`
 
 const NavMenu = styled.div`
   display: flex;
+  flex: 1;
+  align-items: center;
+  margin-left: 25px;
   a {
     display: flex;
     align-items: center;
+    cursor: pointer;
     padding: 0 12px;
     img {
       height: 20px;
@@ -61,6 +66,36 @@ const NavMenu = styled.div`
       font-size: 13px;
       letter-spacing: 1.42px;
       text-transform: uppercase;
+      position: relative;
+      &:after {
+        content: "";
+        height: 2px;
+        background: white;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -6px;
+        // opacity: 0;
+        transform-origin: left center;
+        transition: all 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s;
+        transform: scaleX(0);
+      }
+    }
+
+    &:hover {
+      span {
+        &:after {
+          opacity: 1;
+          transform: scaleX(1);
+        }
+      }
     }
   }
+`;
+
+const UsrImg = styled.img`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
 `;
