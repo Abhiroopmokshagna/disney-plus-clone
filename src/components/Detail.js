@@ -69,6 +69,7 @@ const ImageTitle = styled.div`
     height: 100%;
     object-fit: contain;
   }
+  margin-top: 60px;
 `;
 
 const Controls = styled.div`
