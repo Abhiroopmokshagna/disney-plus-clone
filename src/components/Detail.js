@@ -1,13 +1,34 @@
 import React from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import db from "../firebase";
+import { useState } from "react";
 function Detail() {
+  const { id } = useParams();
+  const [movie, setMovie] = useState({});
+  useEffect(() => {
+    // Grab movie info from DB.
+    db.collection("movies")
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          // save the movie data
+          setMovie(doc.data());
+        } else {
+          // redirect to home page
+        }
+      });
+  }, [id]);
+  console.log("Movie is: ", movie);
   return (
     <Container>
       <Background>
-        <img src="https://i.pinimg.com/originals/33/34/9d/33349df425a64c1c7384ed1cc6401cff.jpg" />
+        <img src={movie.backgroundImg} />
       </Background>
       <ImageTitle>
-        <img src="https://lumiere-a.akamaihd.net/v1/images/bao_logo_41274152.png?region=0%2C0%2C2048%2C1024&lossy=true&width=650" />
+        <img src={movie.titleImg} />
       </ImageTitle>
       <Controls>
         <PlayButton>
@@ -25,13 +46,8 @@ function Detail() {
           <img src="/images/group-icon.png" />
         </GroupWatchButton>
       </Controls>
-      <SubTitle>2008 · 7m · Family , Fantasy, Kids, Animation</SubTitle>
-      <Description>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque
-        tempore debitis animi quod impedit molestiae laborum, temporibus
-        distinctio eligendi, officiis fuga voluptatem natus deleniti facilis
-        velit fugiat! Necessitatibus, maiores amet.
-      </Description>
+      <SubTitle>{movie.subTitle}</SubTitle>
+      <Description>{movie.description}</Description>
     </Container>
   );
 }
@@ -52,13 +68,13 @@ const Background = styled.div`
   right: 0;
   z-index: -1;
   opacity: 0.8;
+  display: flex;
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 `;
-
 const ImageTitle = styled.div`
   height: 30vh;
   width: 35vw;
