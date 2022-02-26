@@ -1,11 +1,25 @@
 import React from "react";
 import styled from "styled-components";
+import { selectMovies } from "../features/movie/movieSlice";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 function Movies() {
+  const movies = useSelector(selectMovies);
   return (
     <Container>
       <h4>Recommended for You</h4>
       <Content>
-        <Wrap>
+        {movies &&
+          movies.map((movie) => {
+            return (
+              <Wrap key={movie.id}>
+                <Link to={`/detail/${movie.id}`}>
+                  <img src={movie.cardImg} />
+                </Link>
+              </Wrap>
+            );
+          })}
+        {/* <Wrap>
           <img src="/images/shinchan.jpg" />
         </Wrap>
         <Wrap>
@@ -28,7 +42,7 @@ function Movies() {
         </Wrap>
         <Wrap>
           <img src="/images/shinchan.jpg" />
-        </Wrap>
+        </Wrap> */}
       </Content>
     </Container>
   );
@@ -36,7 +50,9 @@ function Movies() {
 
 export default Movies;
 
-const Container = styled.div``;
+const Container = styled.div`
+  margin-bottom: 100px;
+`;
 
 const Content = styled.div`
   display: grid;

@@ -1,36 +1,100 @@
 import React from "react";
+import { auth, provider } from "../firebase";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  selectUserName,
+  selectUserPhoto,
+  setUserLogin,
+  setSignOut,
+} from "../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+
 function Header() {
+  const userName = useSelector(selectUserName);
+  const userPhoto = useSelector(selectUserPhoto);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        dispatch(
+          setUserLogin({
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+          })
+        );
+        navigate("/");
+      } else {
+        navigate("/login");
+      }
+    });
+  }, []);
+
+  const signIn = () => {
+    auth.signInWithPopup(provider).then((result) => {
+      let user = result.user;
+      dispatch(
+        setUserLogin({
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        })
+      );
+      navigate("/");
+    });
+  };
+
+  const signOut = () => {
+    auth.signOut().then(() => {
+      dispatch(setSignOut());
+      navigate("/login");
+    });
+  };
+
   return (
     <Nav>
       <Logo src="/images/logo.svg" />
-      <NavMenu>
-        <a>
-          <img src="/images/home-icon.svg"></img>
-          <span>Home</span>
-        </a>
-        <a>
-          <img src="/images/search-icon.svg"></img>
-          <span>Search</span>
-        </a>
-        <a>
-          <img src="/images/watchlist-icon.svg"></img>
-          <span>Watchlist</span>
-        </a>
-        <a>
-          <img src="/images/original-icon.svg"></img>
-          <span>Originals</span>
-        </a>
-        <a>
-          <img src="/images/movie-icon.svg"></img>
-          <span>Movies</span>
-        </a>
-        <a>
-          <img src="/images/series-icon.svg"></img>
-          <span>Series</span>
-        </a>
-      </NavMenu>
-      <UsrImg src="https://media-exp1.licdn.com/dms/image/C5103AQEJuECoPrNUZg/profile-displayphoto-shrink_200_200/0/1574132865037?e=1651104000&v=beta&t=ekdfzTIvJQ79YqNPSmhuV34WNiYokmeN43oc7FWQNbQ" />
+      {!userName ? (
+        <LoginContainer>
+          <Login onClick={signIn}>Login</Login>
+        </LoginContainer>
+      ) : (
+        <>
+          <NavMenu>
+            <a href="/">
+              <img src="/images/home-icon.svg"></img>
+              <span>Home</span>
+            </a>
+            <a>
+              <img src="/images/search-icon.svg"></img>
+              <span>Search</span>
+            </a>
+            <a>
+              <img src="/images/watchlist-icon.svg"></img>
+              <span>Watchlist</span>
+            </a>
+            <a>
+              <img src="/images/original-icon.svg"></img>
+              <span>Originals</span>
+            </a>
+            <a>
+              <img src="/images/movie-icon.svg"></img>
+              <span>Movies</span>
+            </a>
+            <a>
+              <img src="/images/series-icon.svg"></img>
+              <span>Series</span>
+            </a>
+          </NavMenu>
+          <UsrImg onClick={signOut} src={userPhoto} />
+        </>
+      )}
     </Nav>
   );
 }
@@ -50,6 +114,27 @@ const Logo = styled.img`
   width: 80px;
 `;
 
+const LoginContainer = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+`;
+const Login = styled.a`
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: 1px solid #f9f9f9;
+  border-radius: 4px;
+  transition: all 0.2s ease 0s;
+  cursor: pointer;
+  &:hover {
+    background-color: #f9f9f9;
+    color: #000;
+    border-color: transparent;
+  }
+`;
+
 const NavMenu = styled.div`
   display: flex;
   flex: 1;
@@ -60,6 +145,8 @@ const NavMenu = styled.div`
     align-items: center;
     cursor: pointer;
     padding: 0 12px;
+    text-decoration: none;
+    color: white;
     img {
       height: 20px;
     }
